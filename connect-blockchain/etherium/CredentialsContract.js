@@ -13,7 +13,6 @@ async function estimateGas(method, params) {
     const estimatedGas = await method.estimateGas({ from: accounts[0] });
     return estimatedGas;
   } catch (error) {
-    console.error('Error estimating gas:', error);
     throw error;
   }
 }
@@ -28,7 +27,7 @@ async function addCredential(id, name, institution_id, author, metadata, event_i
     const transaction = await method.send({ from: accounts[0], gas: estimatedGas });
     return transaction;
   } catch (error) {
-    console.error('Error in addCredential:', error);
+    throw error;
   }
 }
 
@@ -42,7 +41,7 @@ async function editCredential(id, name, institution_id, author, metadata, event_
     const transaction = await method.send({ from: accounts[0], gas: estimatedGas });
     return transaction;
   } catch (error) {
-    console.error('Error in editCredential:', error);
+    throw error;
   }
 }
 
@@ -56,7 +55,7 @@ async function removeCredential(id) {
     const transaction = await method.send({ from: accounts[0], gas: estimatedGas });
     return transaction;
   } catch (error) {
-    console.error('Error in removeCredential:', error);
+    throw error;
   }
 }
 
@@ -76,19 +75,38 @@ const functions = {
     const transaction = await contract.methods.removeCredential(...args)
       .send({ from: (await web3.eth.getAccounts())[0] });
     return transaction;
+  },
+  addCredentialEstimate: async (args) => {
+    const contract = new web3.eth.Contract(contractAbi, contractAddress);
+    const method = contract.methods.addCredential(...args);
+    return await estimateGas(method);
+  },
+  editCredentialEstimate: async (args) => {
+    const contract = new web3.eth.Contract(contractAbi, contractAddress);
+    const method = contract.methods.editCredential(...args);
+    return await estimateGas(method);
+  },
+  removeCredentialEstimate: async (args) => {
+    const contract = new web3.eth.Contract(contractAbi, contractAddress);
+    const method = contract.methods.removeCredential(...args[0]);
+    return await estimateGas(method);
   }
 };
 
 const main = async () => {
-  const function_name = process.argv[2]; //  "addCredential"
-  const attributes = process.argv.slice(3); // ["123", "John Doe", "ABC123", "Alice", "Some metadata", "Event123"]
+  const functionName = process.argv[2]; // e.g., "addCredentialEstimate"
+  const attributes = process.argv.slice(3); // e.g., ["123", "John Doe", "ABC123", "Alice", "Some metadata", "Event123"]
   
-  if (functions[function_name]) {
+  if (functions[functionName]) {
     try {
-      const result = await functions[function_name](attributes);
-      console.log('Transaction successful:', result);
+      const result = await functions[functionName](attributes);
+      if (functionName.includes('Estimate')) {
+        console.log(`${result}`);
+      } else {
+        console.log(result);
+      }
     } catch (error) {
-      console.error('Error executing function:', error);
+      console.error(error);
     }
   } else {
     console.error('Function not found');
