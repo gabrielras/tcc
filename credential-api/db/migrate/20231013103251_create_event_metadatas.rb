@@ -7,7 +7,8 @@ class CreateEventMetadatas < ActiveRecord::Migration[7.0]
       t.references :credential_event, foreign_key: true, type: :uuid
 
       t.jsonb :metadata
-
+      t.integer :estimated_cost
+ 
       t.timestamps
     end
   end

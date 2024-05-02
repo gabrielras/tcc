@@ -29,7 +29,6 @@ module V1
         end
 
         event.transition_to!(:pricing)
-        event.update!(estimated_cost: @estimated_cost, estimated_cost_date: Time.zone.now)
       end
     end
   end

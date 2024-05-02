@@ -9,9 +9,6 @@ class CreateEvents < ActiveRecord::Migration[7.0]
 
       t.string :state
 
-      t.float :estimated_cost
-      t.datetime :estimated_cost_date
-
       t.timestamps
     end
   end
