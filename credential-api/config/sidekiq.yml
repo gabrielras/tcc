@@ -1,0 +1,13 @@
+:concurrency: 1
+development:
+  :concurrency: 2
+integration:
+  :concurrency: 2
+staging:
+  :concurrency: 3
+production:
+  :concurrency: 10
+:queues:
+  - default
+  - mailers
+  - notifier
